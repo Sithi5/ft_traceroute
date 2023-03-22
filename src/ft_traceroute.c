@@ -15,18 +15,6 @@ void create_socket() {
         fprintf(stderr, "%s: socket: %s\n", PROGRAM_NAME, strerror(errno));
         exit(ERROR_SOCKET_OPEN);
     }
-
-    if (traceroute.args.W_flag) {
-        timeout.tv_sec = traceroute.args.timeout;
-        timeout.tv_usec = 0;
-    } else {
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 100000;   // 0.1 seconds
-    }
-    if (setsockopt(traceroute.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-        fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
-        exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
-    }
 }
 
 void resolve_server_addr() {
@@ -52,7 +40,6 @@ void resolve_server_addr() {
 int main(int argc, char *argv[]) {
 
     set_args_structure();
-    set_packets_stats();
     parse_args(argc, argv);
     create_socket();
     signal(SIGINT, int_handler);
@@ -60,20 +47,17 @@ int main(int argc, char *argv[]) {
     print_traceroute_address_infos();
     for (traceroute.current_ttl = 1; traceroute.current_ttl < traceroute.args.max_hops;
          traceroute.current_ttl++) {
+
         if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.current_ttl,
                        sizeof(int)) < 0) {
             fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
             exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
         }
-        send_ping(traceroute.current_ttl);
-        if (receive_package() == 1) {
-            break;
+        for (int i = 0; i < traceroute.args.nqueries; i++) {
+            send_package();
+            receive_package();
         }
-        if (traceroute.args.num_packets > 0 &&
-            (traceroute.args.num_packets == traceroute.packets_stats.transmitted)) {
-            break;
-        }
+        close(traceroute.sockfd);
+        return 0;
     }
-    close(traceroute.sockfd);
-    return 0;
 }

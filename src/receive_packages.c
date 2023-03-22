@@ -9,7 +9,7 @@ static int recv_ping_msg(struct msghdr *msg) {
     return received_size;
 }
 
-static int process_received_package(int received_size, struct msghdr *msg) {
+static void process_received_package(int received_size, struct msghdr *msg) {
     struct icmp icmp;
     struct ip *ip_header = (struct ip *) msg->msg_iov->iov_base;
     int ip_header_length = ip_header->ip_hl << 2;
@@ -17,18 +17,14 @@ static int process_received_package(int received_size, struct msghdr *msg) {
     ft_bzero(&icmp, sizeof(struct icmp));
     ft_memcpy(&icmp, (char *) ip_header + ip_header_length, sizeof(struct icmp));
 
-    if ((icmp.icmp_type == ICMP_ECHOREPLY && icmp.icmp_id == (getpid() & 0xffff)) ||
-        icmp.icmp_type == ICMP_TIMXCEED) {
-        printf("Received ICMP type %d\n", icmp.icmp_type);
-        if (icmp.icmp_type == ICMP_TIMXCEED)
-            return 0;
-        return 1;
-    } else {
-        return -1;
+    if (icmp.icmp_type == ICMP_ECHOREPLY) {
+        (void) receive_package;
+    } else if (icmp.icmp_type == ICMP_TIMXCEED) {
+        (void) receive_package;
     }
 }
 
-int receive_package() {
+void receive_package() {
     char buffer[IP_MAXPACKET];
     struct iovec iov;
     struct msghdr msg;
@@ -50,7 +46,6 @@ int receive_package() {
     msg.msg_flags = 0;
 
     if ((received_size = recv_ping_msg(&msg)) >= 0) {
-        return process_received_package(received_size, &msg);
+        process_received_package(received_size, &msg);
     }
-    return -2;
 }

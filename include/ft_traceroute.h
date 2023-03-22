@@ -60,38 +60,31 @@ enum e_error {
 /****************************************************************************/
 
 typedef struct s_args {
-    bool a_flag;
-    bool D_flag;
     bool h_flag;
-    bool i_flag;
-    bool n_flag;
     bool q_flag;
-    bool v_flag;
-    bool w_flag;
-    bool W_flag;
     int nqueries;
     int max_hops;
-    int timeout;
-    int packets_size;
-    int deadline;
-    double interval;
-    int num_packets;
     char *host;
 } t_args;
 
-typedef struct s_packets_stats {
-    int transmitted;
-    int received;
-    double min_rtt;
-    double max_rtt;
-    double sum_rtt;
-    double sum_squared_rtt;
-} t_packets_stats;
+typedef struct s_packet_received {
+    struct sockaddr_in server_addr;
+    struct timeval sent_time;
+    struct timeval end_time;
+    int ttl;
+    int rtt;
+    int icmp_type;
+    int icmp_code;
+    int icmp_id;
+    int icmp_seq;
+    bool received;
+    char *dns_name;
+} t_packet_received;
 
 typedef struct s_traceroute {
-    t_packets_stats packets_stats;
     t_args args;
     struct sockaddr_in server_addr;
+    t_packet_received *packets_received;
     int current_ttl;
     int sockfd;
 } g_traceroute;
@@ -108,18 +101,16 @@ extern g_traceroute traceroute;
 
 // prints
 void print_traceroute_address_infos();
-void print_statistics();
-void display_received_package_infos(struct ip *ip_header, int sequence);
 
 // struct
 void set_packets_stats();
 void set_args_structure();
 
 // send_packages
-int send_ping(int sequence);
+int send_package();
 
 // receive_package
-int receive_package();
+void receive_package();
 
 // errors
 void ft_perror(const char *message);

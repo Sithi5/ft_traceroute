@@ -1,7 +1,7 @@
 
 #include "ft_traceroute.h"
 
-static struct icmp create_icmp_header(int sequence) {
+static struct icmp create_icmp_header() {
     struct icmp icmp;
 
     ft_bzero(&icmp, sizeof(icmp));
@@ -11,23 +11,17 @@ static struct icmp create_icmp_header(int sequence) {
     icmp.icmp_id =
         getpid() &
         0xffff;   // ID of the process, we are using our own PID here (16 bits) to keep it simple
-    icmp.icmp_seq = sequence;                                // Sequence number
     gettimeofday((struct timeval *) icmp.icmp_data, NULL);   // Store timestamp in icmp payload
     icmp.icmp_cksum = ft_icmp_checksum(
         (char *) &icmp, sizeof(struct icmp));   // Calculate the checksum of the ICMP header
     return icmp;
 }
 
-int send_ping(int sequence) {
+int send_package() {
     struct icmp icmp;
 
-    icmp = create_icmp_header(sequence);
+    icmp = create_icmp_header();
     int ret = sendto(traceroute.sockfd, &icmp, sizeof(icmp), 0,
                      (struct sockaddr *) &traceroute.server_addr, sizeof(traceroute.server_addr));
-    if (ret < 0) {
-        fprintf(stderr, "%s: sendto: %s\n", PROGRAM_NAME, strerror(errno));
-    } else {
-        traceroute.packets_stats.transmitted++;
-    }
     return 0;
 }
