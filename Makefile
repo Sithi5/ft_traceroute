@@ -76,7 +76,6 @@ SRC_NAME			:=	ft_traceroute.c							\
 						args.c 								\
 						send_packages.c 					\
 						receive_packages.c 					\
-						handle_packages.c 					\
 						errors.c 							\
 						network.c
 

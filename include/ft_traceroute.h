@@ -121,11 +121,6 @@ int send_ping(int sequence);
 // receive_package
 int receive_package();
 
-// handle_packages
-void handle_ICMP_echo_package(int received_size, struct icmp icmp, struct sockaddr *server_addr,
-                              struct ip *ip_header);
-void handle_ttl_package(int received_size, struct sockaddr *server_addr);
-
 // errors
 void ft_perror(const char *message);
 void exit_clean(int sockfd, int status);
