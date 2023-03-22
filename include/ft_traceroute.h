@@ -1,5 +1,5 @@
-#ifndef PING_H
-#define PING_H
+#ifndef TRACEROUTE_H
+#define TRACEROUTE_H
 
 /****************************************************************************/
 /*                          INCLUDES                                        */
@@ -22,7 +22,7 @@
 /*                          DEFINES                                         */
 /****************************************************************************/
 
-#define PROGRAM_NAME    "ft_ping"
+#define PROGRAM_NAME    "ft_traceroute"
 #define PROGRAM_VERSION "1.0.0"
 #define PROGRAM_AUTHOR  "mabouce"
 

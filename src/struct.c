@@ -1,4 +1,4 @@
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 /*
  * This function is used to initialize the packets_stats structure

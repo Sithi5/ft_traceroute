@@ -4,7 +4,7 @@ SHELL				=	/bin/sh
 #                                BINARIES NAME                                 #
 ################################################################################
 
-NAME				=	ft_ping
+NAME				=	ft_traceroute
 
 ART_NAME			=	bird
 
@@ -69,7 +69,7 @@ endif
 #                                     NAME                                     #
 ################################################################################
 
-SRC_NAME			:=	ft_ping.c							\
+SRC_NAME			:=	ft_traceroute.c							\
 						utils.c 							\
 						prints.c 							\
 						struct.c 							\
@@ -81,7 +81,7 @@ SRC_NAME			:=	ft_ping.c							\
 						network.c
 
 
-INCLUDE_NAME		:=	ft_ping.h
+INCLUDE_NAME		:=	ft_traceroute.h
 
 TESTS_SRC_NAME		:= 	./tests/test*.sh					\
 
@@ -179,7 +179,7 @@ $(ART_NAME):
 	@echo "$(_END)" >> $(ART_NAME)
 	@cat $(ART_NAME)
 
-.PHONY: all clean fclean re check help tests clean_payload
+.PHONY: all clean fclean re check help tests
 
 ################################################################################
 #                                    FORMAT                                    #

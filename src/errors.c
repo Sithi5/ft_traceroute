@@ -1,4 +1,4 @@
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 void ft_perror(const char *message) { fprintf(stderr, "%s: %s\n", message, strerror(errno)); }
 

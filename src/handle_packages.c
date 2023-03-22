@@ -1,5 +1,5 @@
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 static void update_packets_stats(double rtt) {
     ping.packets_stats.received++;

@@ -1,4 +1,4 @@
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 void print_ping_address_infos() {
     char ip_address[INET_ADDRSTRLEN];

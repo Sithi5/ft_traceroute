@@ -1,4 +1,4 @@
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 /*
  * Function to calculate the checksum of an ICMP packet

@@ -1,4 +1,4 @@
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 void *ft_memset(void *s, int c, size_t n) {
     unsigned char *p = s;

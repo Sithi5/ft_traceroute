@@ -1,5 +1,5 @@
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 static struct icmp create_icmp_header(int sequence) {
     struct icmp icmp;

@@ -1,5 +1,5 @@
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 static int recv_ping_msg(struct msghdr *msg, int sequence) {
     int received_size = recvmsg(ping.sockfd, msg, 0);
