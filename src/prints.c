@@ -5,11 +5,8 @@ void print_traceroute_address_infos() {
 
     inet_ntop(AF_INET, &(traceroute.server_addr.sin_addr), ip_address, INET_ADDRSTRLEN);
 
-    if (traceroute.args.v_flag) {
-        printf("traceroute to %s (%s), %i hops max, %lu byte packets\n", traceroute.args.max_hops,
-               traceroute.args.host, ip_address, sizeof(struct icmp), getpid() & 0xffff,
-               getpid() & 0xffff);
-    }
+    printf("traceroute to %s (%s), %i hops max, %lu byte packets\n", traceroute.args.host,
+           ip_address, traceroute.args.max_hops, sizeof(struct icmp));
 }
 
 void print_statistics() {

@@ -58,20 +58,22 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, int_handler);
     resolve_server_addr();
     print_traceroute_address_infos();
-    signal(SIGALRM, int_handler);
-    for (int ttl = 1; true; ttl++) {
-        if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int)) < 0) {
+    for (traceroute.current_ttl = 1; traceroute.current_ttl < traceroute.args.max_hops;
+         traceroute.current_ttl++) {
+        if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.current_ttl,
+                       sizeof(int)) < 0) {
             fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
             exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
         }
-        send_ping(ttl);
-        receive_ping(ttl);
+        send_ping(traceroute.current_ttl);
+        if (receive_package() == 1) {
+            break;
+        }
         if (traceroute.args.num_packets > 0 &&
             (traceroute.args.num_packets == traceroute.packets_stats.transmitted)) {
             break;
         }
     }
-    print_statistics();
     close(traceroute.sockfd);
     return 0;
 }

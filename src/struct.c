@@ -21,6 +21,7 @@ void set_args_structure() {
     traceroute.args.v_flag = false;
     traceroute.args.ttl_value = DEFAULT_TTL;
     traceroute.args.max_hops = DEFAULT_MAX_HOPS;
+    traceroute.args.nqueries = DEFAULT_NQUERIES;
     traceroute.args.w_flag = false;
     traceroute.args.W_flag = false;
     traceroute.args.timeout = 0;

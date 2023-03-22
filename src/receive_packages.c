@@ -1,13 +1,13 @@
 
 #include "ft_traceroute.h"
 
-static int recv_ping_msg(struct msghdr *msg, int sequence) {
+static int recv_ping_msg(struct msghdr *msg) {
     int received_size = recvmsg(traceroute.sockfd, msg, 0);
     if (received_size < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK)   // Timeout occurred
         {
             if (traceroute.args.v_flag && traceroute.args.q_flag == false) {
-                printf("Request timeout for icmp_seq %d\n", sequence);
+                printf("Request timeout for icmp_seq \n");
             }
             return -1;
         } else {
@@ -20,27 +20,26 @@ static int recv_ping_msg(struct msghdr *msg, int sequence) {
     return received_size;
 }
 
-static void process_received_ping(int received_size, struct msghdr *msg, int sequence) {
+static int process_received_package(int received_size, struct msghdr *msg) {
     struct icmp icmp;
     struct ip *ip_header = (struct ip *) msg->msg_iov->iov_base;
     int ip_header_length = ip_header->ip_hl << 2;
 
     ft_bzero(&icmp, sizeof(struct icmp));
     ft_memcpy(&icmp, (char *) ip_header + ip_header_length, sizeof(struct icmp));
-    if (icmp.icmp_type == ICMP_ECHOREPLY && icmp.icmp_id == (getpid() & 0xffff) &&
-        icmp.icmp_seq == sequence) {
-        handle_ICMP_echo_package(received_size, icmp, msg->msg_name, ip_header);
+
+    if ((icmp.icmp_type == ICMP_ECHOREPLY && icmp.icmp_id == (getpid() & 0xffff)) ||
+        icmp.icmp_type == ICMP_TIMXCEED) {
+        printf("Received ICMP type %d\n", icmp.icmp_type);
+        if (icmp.icmp_type == ICMP_TIMXCEED)
+            return 0;
+        return 1;
     } else {
-        if (icmp.icmp_type == ICMP_TIMXCEED) {
-            handle_ttl_package(received_size, msg->msg_name);
-        }
-        if (traceroute.args.v_flag) {
-            display_received_package_infos(ip_header, sequence);
-        }
+        return -1;
     }
 }
 
-void receive_ping(int sequence) {
+int receive_package() {
     char buffer[IP_MAXPACKET];
     struct iovec iov;
     struct msghdr msg;
@@ -61,7 +60,8 @@ void receive_ping(int sequence) {
     msg.msg_controllen = IP_MAXPACKET;
     msg.msg_flags = 0;
 
-    if ((received_size = recv_ping_msg(&msg, sequence)) >= 0) {
-        process_received_ping(received_size, &msg, sequence);
+    if ((received_size = recv_ping_msg(&msg)) >= 0) {
+        return process_received_package(received_size, &msg);
     }
+    return -2;
 }

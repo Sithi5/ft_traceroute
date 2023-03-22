@@ -6,6 +6,7 @@ void usage() {
            "Options:\n"
            "  <destination>      dns name or ip address\n"
            "  -V                 print version and exit\n"
+           "  -q <nqueries>      set the number of probes per each hop\n"
            "  -m <max_ttl>       set the max number of hops\n",
            PROGRAM_NAME);
     exit(1);
@@ -24,6 +25,14 @@ void parse_args(int argc, char *argv[]) {
         } else if (ft_strcmp(argv[i], "-m") == 0 && i + 1 < argc) {
             if (i + 1 < argc && ft_isnumber(argv[i + 1])) {
                 traceroute.args.max_hops = ft_atoi(argv[i + 1]);
+                i++;
+            } else {
+                fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);
+                exit(ERROR_ARGS);
+            }
+        } else if (ft_strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
+            if (i + 1 < argc && ft_isnumber(argv[i + 1])) {
+                traceroute.args.nqueries = ft_atoi(argv[i + 1]);
                 i++;
             } else {
                 fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);

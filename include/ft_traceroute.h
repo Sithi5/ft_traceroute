@@ -36,6 +36,7 @@
 #define MAX_ADDRS        16
 #define DEFAULT_TTL      64
 #define DEFAULT_MAX_HOPS 30
+#define DEFAULT_NQUERIES 3
 
 /****************************************************************************/
 /*                           ENUM                                           */
@@ -69,6 +70,7 @@ typedef struct s_args {
     bool v_flag;
     bool w_flag;
     bool W_flag;
+    int nqueries;
     int max_hops;
     int timeout;
     int packets_size;
@@ -92,6 +94,7 @@ typedef struct s_traceroute {
     t_packets_stats packets_stats;
     t_args args;
     struct sockaddr_in server_addr;
+    int current_ttl;
     int sockfd;
 } g_traceroute;
 
@@ -117,8 +120,8 @@ void set_args_structure();
 // send_packages
 int send_ping(int sequence);
 
-// receive_packages
-void receive_ping(int sequence);
+// receive_package
+int receive_package();
 
 // handle_packages
 void handle_ICMP_echo_package(int received_size, struct icmp icmp, struct sockaddr *server_addr,
