@@ -18,11 +18,7 @@ void create_socket() {
         fprintf(stderr, "%s: socket: %s\n", PROGRAM_NAME, strerror(errno));
         exit(ERROR_SOCKET_OPEN);
     }
-    if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.args.ttl_value,
-                   sizeof(traceroute.args.ttl_value)) < 0) {
-        fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
-        exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
-    }
+
     if (traceroute.args.W_flag) {
         timeout.tv_sec = traceroute.args.timeout;
         timeout.tv_usec = 0;
@@ -67,14 +63,18 @@ int main(int argc, char *argv[]) {
     print_ping_address_infos();
     alarm(traceroute.args.deadline);
     signal(SIGALRM, int_handler);
-    for (int sequence = 0; 1; sequence++) {
-        send_ping(sequence);
-        receive_ping(sequence);
+
+    for (int ttl = 1; true; ttl++) {
+        if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int)) < 0) {
+            fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
+            exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
+        }
+        send_ping(ttl);
+        receive_ping(ttl);
         if (traceroute.args.num_packets > 0 &&
             (traceroute.args.num_packets == traceroute.packets_stats.transmitted)) {
             break;
         }
-        usleep((int) (traceroute.args.interval * 1000000));
     }
     print_statistics();
     close(traceroute.sockfd);
