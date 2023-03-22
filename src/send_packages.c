@@ -22,12 +22,12 @@ int send_ping(int sequence) {
     struct icmp icmp;
 
     icmp = create_icmp_header(sequence);
-    int ret = sendto(ping.sockfd, &icmp, sizeof(icmp), 0, (struct sockaddr *) &ping.server_addr,
-                     sizeof(ping.server_addr));
+    int ret = sendto(traceroute.sockfd, &icmp, sizeof(icmp), 0,
+                     (struct sockaddr *) &traceroute.server_addr, sizeof(traceroute.server_addr));
     if (ret < 0) {
         fprintf(stderr, "%s: sendto: %s\n", PROGRAM_NAME, strerror(errno));
     } else {
-        ping.packets_stats.transmitted++;
+        traceroute.packets_stats.transmitted++;
     }
     return 0;
 }

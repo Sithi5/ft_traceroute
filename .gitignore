@@ -56,5 +56,5 @@ ft_traceroute
 .vscode
 toignore
 ft_traceroute.log
-ping.log
+traceroute.log
 todolist*

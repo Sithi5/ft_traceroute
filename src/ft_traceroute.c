@@ -1,38 +1,38 @@
 #include "ft_traceroute.h"
 
-g_ping ping;
+g_traceroute traceroute;
 
 void int_handler(int signo) {
-    if (ping.packets_stats.transmitted > 0) {
+    if (traceroute.packets_stats.transmitted > 0) {
         print_statistics();
     }
-    exit_clean(ping.sockfd, ERROR_SIGINT);
+    exit_clean(traceroute.sockfd, ERROR_SIGINT);
     (void) signo;
 }
 
 void create_socket() {
     struct timeval timeout;
 
-    ping.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-    if (ping.sockfd < 0) {
+    traceroute.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (traceroute.sockfd < 0) {
         fprintf(stderr, "%s: socket: %s\n", PROGRAM_NAME, strerror(errno));
         exit(ERROR_SOCKET_OPEN);
     }
-    if (setsockopt(ping.sockfd, IPPROTO_IP, IP_TTL, &ping.args.ttl_value,
-                   sizeof(ping.args.ttl_value)) < 0) {
+    if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.args.ttl_value,
+                   sizeof(traceroute.args.ttl_value)) < 0) {
         fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
-        exit_clean(ping.sockfd, ERROR_SOCKET_OPTION);
+        exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
     }
-    if (ping.args.W_flag) {
-        timeout.tv_sec = ping.args.timeout;
+    if (traceroute.args.W_flag) {
+        timeout.tv_sec = traceroute.args.timeout;
         timeout.tv_usec = 0;
     } else {
         timeout.tv_sec = 0;
         timeout.tv_usec = 100000;   // 0.1 seconds
     }
-    if (setsockopt(ping.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+    if (setsockopt(traceroute.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
         fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
-        exit_clean(ping.sockfd, ERROR_SOCKET_OPTION);
+        exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
     }
 }
 
@@ -40,18 +40,19 @@ void resolve_server_addr() {
     int status;
     struct sockaddr_in *server_addrs;
 
-    ping.server_addr.sin_family = AF_INET;   // IPv4
-    ping.server_addr.sin_port = 0;           // Use default port
-    status = inet_pton(AF_INET, ping.args.host, &ping.server_addr.sin_addr);
+    traceroute.server_addr.sin_family = AF_INET;   // IPv4
+    traceroute.server_addr.sin_port = 0;           // Use default port
+    status = inet_pton(AF_INET, traceroute.args.host, &traceroute.server_addr.sin_addr);
     if (status == 0) {   // Input is not an IPv4 address, try resolving as a domain name
-        if (!(server_addrs = ft_gethostbyname(ping.args.host, 1))) {
-            fprintf(stderr, "%s: cannot resolve %s: Unknow host\n", PROGRAM_NAME, ping.args.host);
-            exit_clean(ping.sockfd, ERROR_RESOLVING_HOST);
+        if (!(server_addrs = ft_gethostbyname(traceroute.args.host, 1))) {
+            fprintf(stderr, "%s: cannot resolve %s: Unknow host\n", PROGRAM_NAME,
+                    traceroute.args.host);
+            exit_clean(traceroute.sockfd, ERROR_RESOLVING_HOST);
         }
-        ping.server_addr.sin_addr = server_addrs[0].sin_addr;   // Use first address
+        traceroute.server_addr.sin_addr = server_addrs[0].sin_addr;   // Use first address
     } else if (status < 0) {
         fprintf(stderr, "%s: inet_pton: %s\n", PROGRAM_NAME, strerror(errno));
-        exit_clean(ping.sockfd, ERROR_INET_PTON);
+        exit_clean(traceroute.sockfd, ERROR_INET_PTON);
     }
 }
 
@@ -64,18 +65,18 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, int_handler);
     resolve_server_addr();
     print_ping_address_infos();
-    alarm(ping.args.deadline);
+    alarm(traceroute.args.deadline);
     signal(SIGALRM, int_handler);
     for (int sequence = 0; 1; sequence++) {
         send_ping(sequence);
         receive_ping(sequence);
-        if (ping.args.num_packets > 0 &&
-            (ping.args.num_packets == ping.packets_stats.transmitted)) {
+        if (traceroute.args.num_packets > 0 &&
+            (traceroute.args.num_packets == traceroute.packets_stats.transmitted)) {
             break;
         }
-        usleep((int) (ping.args.interval * 1000000));
+        usleep((int) (traceroute.args.interval * 1000000));
     }
     print_statistics();
-    close(ping.sockfd);
+    close(traceroute.sockfd);
     return 0;
 }

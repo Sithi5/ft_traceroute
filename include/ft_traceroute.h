@@ -86,18 +86,18 @@ typedef struct s_packets_stats {
     double sum_squared_rtt;
 } t_packets_stats;
 
-typedef struct s_ping {
+typedef struct s_traceroute {
     t_packets_stats packets_stats;
     t_args args;
     struct sockaddr_in server_addr;
     int sockfd;
-} g_ping;
+} g_traceroute;
 
 /****************************************************************************/
 /*                          GLOBALS                                         */
 /****************************************************************************/
 
-extern g_ping ping;
+extern g_traceroute traceroute;
 
 /****************************************************************************/
 /*                          FUNCTIONS DEFINITIONS                           */

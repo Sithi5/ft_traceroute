@@ -2,16 +2,16 @@
 #include "ft_traceroute.h"
 
 static int recv_ping_msg(struct msghdr *msg, int sequence) {
-    int received_size = recvmsg(ping.sockfd, msg, 0);
+    int received_size = recvmsg(traceroute.sockfd, msg, 0);
     if (received_size < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK)   // Timeout occurred
         {
-            if (ping.args.v_flag && ping.args.q_flag == false) {
+            if (traceroute.args.v_flag && traceroute.args.q_flag == false) {
                 printf("Request timeout for icmp_seq %d\n", sequence);
             }
             return -1;
         } else {
-            if (ping.args.v_flag && ping.args.q_flag == false) {
+            if (traceroute.args.v_flag && traceroute.args.q_flag == false) {
                 fprintf(stderr, "%s: recvmsg: %s\n", PROGRAM_NAME, strerror(errno));
             }
             return -1;
@@ -34,7 +34,7 @@ static void process_received_ping(int received_size, struct msghdr *msg, int seq
         if (icmp.icmp_type == ICMP_TIMXCEED) {
             handle_ttl_package(received_size, msg->msg_name);
         }
-        if (ping.args.v_flag) {
+        if (traceroute.args.v_flag) {
             display_received_package_infos(ip_header, sequence);
         }
     }
@@ -50,7 +50,7 @@ void receive_ping(int sequence) {
     ft_bzero(&msg, sizeof(struct msghdr));
 
     // Copy the server address to sockaddr_copy because recvmsg() will overwrite the address
-    sockaddr_copy = ping.server_addr;
+    sockaddr_copy = traceroute.server_addr;
     iov.iov_base = buffer;
     iov.iov_len = sizeof(buffer);
     msg.msg_name = &sockaddr_copy;

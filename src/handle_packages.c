@@ -2,20 +2,20 @@
 #include "ft_traceroute.h"
 
 static void update_packets_stats(double rtt) {
-    ping.packets_stats.received++;
+    traceroute.packets_stats.received++;
 
     // Update min_rtt
-    if (ping.packets_stats.min_rtt > rtt) {
-        ping.packets_stats.min_rtt = rtt;
+    if (traceroute.packets_stats.min_rtt > rtt) {
+        traceroute.packets_stats.min_rtt = rtt;
     }
 
     // Update max_rtt
-    if (ping.packets_stats.max_rtt < rtt) {
-        ping.packets_stats.max_rtt = rtt;
+    if (traceroute.packets_stats.max_rtt < rtt) {
+        traceroute.packets_stats.max_rtt = rtt;
     }
 
-    ping.packets_stats.sum_rtt += rtt;
-    ping.packets_stats.sum_squared_rtt += rtt * rtt;
+    traceroute.packets_stats.sum_rtt += rtt;
+    traceroute.packets_stats.sum_squared_rtt += rtt * rtt;
 }
 
 void handle_ICMP_echo_package(int received_size, struct icmp icmp, struct sockaddr *server_addr,
@@ -35,12 +35,12 @@ void handle_ICMP_echo_package(int received_size, struct icmp icmp, struct sockad
 
     dns_name = ft_reverse_dns_lookup(server_addr, NI_MAXHOST);
 
-    if (ping.args.q_flag == false) {
-        if (ping.args.a_flag)
+    if (traceroute.args.q_flag == false) {
+        if (traceroute.args.a_flag)
             printf("\a");
-        if (ping.args.D_flag)
+        if (traceroute.args.D_flag)
             printf("[%ld.%06ld] ", (long) end_time.tv_sec, (long) end_time.tv_usec);
-        if (ping.args.n_flag == false) {
+        if (traceroute.args.n_flag == false) {
             printf("%d bytes from %s: icmp_seq=%d ttl=%u time=%.1f ms\n", received_size, dns_name,
                    icmp.icmp_seq, ip_header->ip_ttl, rtt);
         } else {
@@ -61,12 +61,12 @@ void handle_ttl_package(int received_size, struct sockaddr *server_addr) {
 
     dns_name = ft_reverse_dns_lookup(server_addr, NI_MAXHOST);
 
-    if (ping.args.q_flag == false) {
-        if (ping.args.a_flag)
+    if (traceroute.args.q_flag == false) {
+        if (traceroute.args.a_flag)
             printf("\a");
-        if (ping.args.D_flag)
+        if (traceroute.args.D_flag)
             printf("[%ld.%06ld] ", (long) end_time.tv_sec, (long) end_time.tv_usec);
-        if (ping.args.n_flag == false) {
+        if (traceroute.args.n_flag == false) {
             printf("%d bytes from %s: ", received_size, dns_name);
         } else {
             printf("%d bytes from %s: ", received_size, ip_address);
