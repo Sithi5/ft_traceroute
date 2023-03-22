@@ -33,6 +33,11 @@ void parse_args(int argc, char *argv[]) {
         } else if (ft_strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
             if (i + 1 < argc && ft_isnumber(argv[i + 1])) {
                 traceroute.args.nqueries = ft_atoi(argv[i + 1]);
+                if (traceroute.args.nqueries < 1 ||
+                    traceroute.args.nqueries > MAX_QUERIES_PER_HOP) {
+                    fprintf(stderr, "no more than 10 probes per hop");
+                    exit(ERROR_ARGS);
+                }
                 i++;
             } else {
                 fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);

@@ -32,10 +32,11 @@
 #define DEBUG 0
 #endif
 
-#define MAX_PACKET_SIZE  1024
-#define MAX_ADDRS        16
-#define DEFAULT_MAX_HOPS 30
-#define DEFAULT_NQUERIES 3
+#define MAX_PACKET_SIZE     1024
+#define MAX_ADDRS           16
+#define DEFAULT_MAX_HOPS    30
+#define MAX_QUERIES_PER_HOP 10
+#define DEFAULT_NQUERIES    3
 
 /****************************************************************************/
 /*                           ENUM                                           */
@@ -62,7 +63,7 @@ enum e_error {
 typedef struct s_args {
     bool h_flag;
     bool q_flag;
-    int nqueries;
+    unsigned int nqueries;
     int max_hops;
     char *host;
 } t_args;
@@ -72,11 +73,9 @@ typedef struct s_packet_received {
     struct timeval sent_time;
     struct timeval end_time;
     int ttl;
-    int rtt;
+    double rtt;
     int icmp_type;
     int icmp_code;
-    int icmp_id;
-    int icmp_seq;
     bool received;
     char *dns_name;
 } t_packet_received;
@@ -84,7 +83,8 @@ typedef struct s_packet_received {
 typedef struct s_traceroute {
     t_args args;
     struct sockaddr_in server_addr;
-    t_packet_received *packets_received;
+    t_packet_received packets_received[DEFAULT_MAX_HOPS];
+    bool final_packet_received;
     int current_ttl;
     int sockfd;
 } g_traceroute;
@@ -101,16 +101,16 @@ extern g_traceroute traceroute;
 
 // prints
 void print_traceroute_address_infos();
-
+void print_current_ttl_stats();
 // struct
 void set_packets_stats();
 void set_args_structure();
 
 // send_packages
-int send_package();
+void send_package(unsigned int packet_number);
 
 // receive_package
-void receive_package();
+void receive_package(unsigned int packet_number);
 
 // errors
 void ft_perror(const char *message);
