@@ -4,18 +4,7 @@
 static int recv_ping_msg(struct msghdr *msg) {
     int received_size = recvmsg(traceroute.sockfd, msg, 0);
     if (received_size < 0) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)   // Timeout occurred
-        {
-            if (traceroute.args.v_flag && traceroute.args.q_flag == false) {
-                printf("Request timeout for icmp_seq \n");
-            }
-            return -1;
-        } else {
-            if (traceroute.args.v_flag && traceroute.args.q_flag == false) {
-                fprintf(stderr, "%s: recvmsg: %s\n", PROGRAM_NAME, strerror(errno));
-            }
-            return -1;
-        }
+        return -1;
     }
     return received_size;
 }

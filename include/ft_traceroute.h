@@ -34,7 +34,6 @@
 
 #define MAX_PACKET_SIZE  1024
 #define MAX_ADDRS        16
-#define DEFAULT_TTL      64
 #define DEFAULT_MAX_HOPS 30
 #define DEFAULT_NQUERIES 3
 
@@ -74,7 +73,6 @@ typedef struct s_args {
     int max_hops;
     int timeout;
     int packets_size;
-    int ttl_value;
     int deadline;
     double interval;
     int num_packets;
