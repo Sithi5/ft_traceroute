@@ -1,16 +1,14 @@
 #include "ft_traceroute.h"
 
-void print_ping_address_infos() {
+void print_traceroute_address_infos() {
     char ip_address[INET_ADDRSTRLEN];
 
     inet_ntop(AF_INET, &(traceroute.server_addr.sin_addr), ip_address, INET_ADDRSTRLEN);
 
     if (traceroute.args.v_flag) {
-        printf("PING %s (%s): %lu data bytes, id 0x%x = %d\n", traceroute.args.host, ip_address,
-               sizeof(struct icmp), getpid() & 0xffff, getpid() & 0xffff);
-    } else {
-        printf("PING %s (%s): %lu data bytes\n", traceroute.args.host, ip_address,
-               sizeof(struct icmp));
+        printf("traceroute to %s (%s), %i hops max, %lu byte packets\n", traceroute.args.max_hops,
+               traceroute.args.host, ip_address, sizeof(struct icmp), getpid() & 0xffff,
+               getpid() & 0xffff);
     }
 }
 

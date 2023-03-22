@@ -32,9 +32,10 @@
 #define DEBUG 0
 #endif
 
-#define MAX_PACKET_SIZE 1024
-#define MAX_ADDRS       16
-#define DEFAULT_TTL     64
+#define MAX_PACKET_SIZE  1024
+#define MAX_ADDRS        16
+#define DEFAULT_TTL      64
+#define DEFAULT_MAX_HOPS 30
 
 /****************************************************************************/
 /*                           ENUM                                           */
@@ -68,6 +69,7 @@ typedef struct s_args {
     bool v_flag;
     bool w_flag;
     bool W_flag;
+    int max_hops;
     int timeout;
     int packets_size;
     int ttl_value;
@@ -104,7 +106,7 @@ extern g_traceroute traceroute;
 /****************************************************************************/
 
 // prints
-void print_ping_address_infos();
+void print_traceroute_address_infos();
 void print_statistics();
 void display_received_package_infos(struct ip *ip_header, int sequence);
 

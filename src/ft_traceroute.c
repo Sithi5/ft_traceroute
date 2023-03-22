@@ -3,9 +3,6 @@
 g_traceroute traceroute;
 
 void int_handler(int signo) {
-    if (traceroute.packets_stats.transmitted > 0) {
-        print_statistics();
-    }
     exit_clean(traceroute.sockfd, ERROR_SIGINT);
     (void) signo;
 }
@@ -60,10 +57,8 @@ int main(int argc, char *argv[]) {
     create_socket();
     signal(SIGINT, int_handler);
     resolve_server_addr();
-    print_ping_address_infos();
-    alarm(traceroute.args.deadline);
+    print_traceroute_address_infos();
     signal(SIGALRM, int_handler);
-
     for (int ttl = 1; true; ttl++) {
         if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(int)) < 0) {
             fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
