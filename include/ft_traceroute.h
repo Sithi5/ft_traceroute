@@ -27,9 +27,9 @@
 #define PROGRAM_AUTHOR  "mabouce"
 
 #ifdef DEBUG
-#define DEBUG 1
+#define DEBUG true
 #else
-#define DEBUG 0
+#define DEBUG false
 #endif
 
 #define MAX_PACKET_SIZE     1024

@@ -17,6 +17,8 @@ static void process_received_package(struct msghdr *msg, unsigned int packet_num
 
     // Extract the server address from the IP header
     server_addr.sin_addr = ip_header->ip_src;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(0);
 
     ft_bzero(&icmp, sizeof(struct icmp));
     ft_memcpy(&icmp, (char *) ip_header + ip_header_length, sizeof(struct icmp));
