@@ -65,7 +65,7 @@ void receive_package(unsigned int packet_number) {
     if ((recv_packet_msg(&msg)) >= 0) {
         process_received_package(&msg, packet_number);
     } else {
-        printf("* ");
+        printf("* ");   // No response, print a *
         traceroute.packets_received[packet_number].received = false;
         DEBUG ? fprintf(stderr, "%s: recvmsg: %s\n", PROGRAM_NAME, strerror(errno)) : 0;
     }

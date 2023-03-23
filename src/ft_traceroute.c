@@ -45,6 +45,32 @@ void resolve_server_addr() {
     }
 }
 
+void traceroute_loop() {
+    for (traceroute.current_ttl = traceroute.args.first_hop;
+         traceroute.current_ttl <= traceroute.args.max_hops; traceroute.current_ttl++) {
+        traceroute.current_ttl_addr_printed = false;
+        traceroute.current_ttl_printed = false;
+        if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.current_ttl,
+                       sizeof(int)) < 0) {   // Set current TTL
+            fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
+            exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
+        }
+        for (unsigned int i = 0; i < traceroute.args.nqueries; i++)
+            ft_bzero(&traceroute.packets_received,
+                     sizeof(t_packet_received));   // Reset packets received
+        for (unsigned int packet_number = 0; packet_number < traceroute.args.nqueries;
+             packet_number++) {   // Send and receive packets for current TTL nqueries times and
+                                  // fill packets_received
+            send_package(packet_number);
+            receive_package(packet_number);
+            usleep(traceroute.args.sendwait * 1000000);   // For bonus -z
+        }
+        printf("\n");
+        if (traceroute.final_packet_received)
+            break;
+    }
+}
+
 int main(int argc, char *argv[]) {
     set_args_structure();
     parse_args(argc, argv);
@@ -52,40 +78,12 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, int_handler);
     resolve_server_addr();
     print_traceroute_address_infos();
-
     if (traceroute.args.first_hop > traceroute.args.max_hops) {
         fprintf(stderr, "%s: first hop cannot be greater than max hops\n", PROGRAM_NAME);
         exit_clean(traceroute.sockfd, ERROR_ARGS);
     }
     traceroute.final_packet_received = false;
-    for (traceroute.current_ttl = traceroute.args.first_hop;
-         traceroute.current_ttl <= traceroute.args.max_hops; traceroute.current_ttl++) {
-        traceroute.current_ttl_addr_printed = false;
-        traceroute.current_ttl_printed = false;
-        // Set TTL
-        if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.current_ttl,
-                       sizeof(int)) < 0) {
-            fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
-            exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
-        }
-        // Reset packets received
-        for (unsigned int i = 0; i < traceroute.args.nqueries; i++) {
-            ft_bzero(&traceroute.packets_received, sizeof(t_packet_received));
-        }
-        // Send and receive packets for current TTL nqueries times and fill packets_received
-        for (unsigned int packet_number = 0; packet_number < traceroute.args.nqueries;
-             packet_number++) {
-
-            send_package(packet_number);
-            receive_package(packet_number);
-            usleep(traceroute.args.sendwait * 1000000);   // For bonus -z
-        }
-        printf("\n");
-        // print_current_ttl_stats();
-        if (traceroute.final_packet_received) {
-            break;
-        }
-    }
+    traceroute_loop();
     close(traceroute.sockfd);
     return 0;
 }

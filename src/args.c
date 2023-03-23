@@ -14,7 +14,7 @@ void usage() {
            "  -V                 print version and exit\n"
            "  -w <timeout>       number of s to wait for response. double accepted. By default %d\n"
            "  -z <sendwait>      Minimal time interval between probes(float point values allowed, "
-           "default 0 seconds)",
+           "default 0 seconds)\n",
            PROGRAM_NAME, DEFAULT_TIMEOUT);
     exit(1);
 }

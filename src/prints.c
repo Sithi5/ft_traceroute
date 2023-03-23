@@ -15,14 +15,14 @@ void print_package_info(unsigned int packet_number, struct sockaddr_in *server_a
     if (!traceroute.current_ttl_addr_printed) {
         if (traceroute.args.n_flag == false) {
             dns_name = ft_reverse_dns_lookup((struct sockaddr *) server_addr, NI_MAXHOST);
-            printf("%s (%s)", dns_name, inet_ntoa(server_addr->sin_addr));
+            printf("%s (%s) ", dns_name, inet_ntoa(server_addr->sin_addr));
         } else {
-            printf("%s", inet_ntoa(server_addr->sin_addr));
+            printf("%s ", inet_ntoa(server_addr->sin_addr));
         }
         traceroute.current_ttl_addr_printed = true;
     }
-    printf(" %.3lf ms", calculate_package_rtt(&traceroute.packets_received[packet_number].sent_time,
-                                              current_time));
+    printf(" %.3lf ms ", calculate_package_rtt(
+                             &traceroute.packets_received[packet_number].sent_time, current_time));
 }
 
 void print_current_ttl_stats() {
