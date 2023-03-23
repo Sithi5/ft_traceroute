@@ -34,10 +34,13 @@
 
 #define MAX_PACKET_SIZE     1024
 #define MAX_ADDRS           16
+#define DEFAULT_FIRST_HOP   1
 #define DEFAULT_MAX_HOPS    30
+#define MAX_HOPS            255
 #define MAX_QUERIES_PER_HOP 10
 #define DEFAULT_NQUERIES    3
-#define DEFAULT_TIMEOUT_MS  5000
+#define DEFAULT_TIMEOUT     5000
+#define DEFAULT_SENDWAIT    0
 
 /****************************************************************************/
 /*                           ENUM                                           */
@@ -65,8 +68,11 @@ typedef struct s_args {
     bool h_flag;
     bool q_flag;
     bool n_flag;
-    bool W_flag;
-    int timeout_ms;
+    bool I_flag;
+    bool w_flag;
+    double timeout;
+    double sendwait;
+    int first_hop;
     unsigned int nqueries;
     int max_hops;
     char *host;
@@ -82,6 +88,8 @@ typedef struct s_packet_received {
 typedef struct s_traceroute {
     t_args args;
     struct sockaddr_in server_addr;
+    bool current_ttl_addr_printed;
+    bool current_ttl_printed;
     t_packet_received packets_received[DEFAULT_MAX_HOPS];
     bool final_packet_received;
     int current_ttl;

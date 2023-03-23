@@ -16,8 +16,9 @@ void create_socket() {
         exit(ERROR_SOCKET_OPEN);
     }
 
-    timeout.tv_sec = traceroute.args.timeout_ms / 1000;
-    timeout.tv_usec = (traceroute.args.timeout_ms % 1000) * 1000;
+    // get sec from timeout
+    timeout.tv_sec = (int) traceroute.args.timeout;
+    timeout.tv_usec = (int) ((traceroute.args.timeout - timeout.tv_sec) * 1000000);
     if (setsockopt(traceroute.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
         fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
         exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
@@ -51,9 +52,16 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, int_handler);
     resolve_server_addr();
     print_traceroute_address_infos();
+
+    if (traceroute.args.first_hop > traceroute.args.max_hops) {
+        fprintf(stderr, "%s: first hop cannot be greater than max hops\n", PROGRAM_NAME);
+        exit_clean(traceroute.sockfd, ERROR_ARGS);
+    }
     traceroute.final_packet_received = false;
-    for (traceroute.current_ttl = 1; traceroute.current_ttl < traceroute.args.max_hops;
-         traceroute.current_ttl++) {
+    for (traceroute.current_ttl = traceroute.args.first_hop;
+         traceroute.current_ttl < traceroute.args.max_hops; traceroute.current_ttl++) {
+        traceroute.current_ttl_addr_printed = false;
+        traceroute.current_ttl_printed = false;
         // Set TTL
         if (setsockopt(traceroute.sockfd, IPPROTO_IP, IP_TTL, &traceroute.current_ttl,
                        sizeof(int)) < 0) {
@@ -67,10 +75,13 @@ int main(int argc, char *argv[]) {
         // Send and receive packets for current TTL nqueries times and fill packets_received
         for (unsigned int packet_number = 0; packet_number < traceroute.args.nqueries;
              packet_number++) {
+
             send_package(packet_number);
             receive_package(packet_number);
+            usleep(traceroute.args.sendwait * 1000000);   // For bonus -z
         }
-        print_current_ttl_stats();
+        printf("\n");
+        // print_current_ttl_stats();
         if (traceroute.final_packet_received) {
             break;
         }
