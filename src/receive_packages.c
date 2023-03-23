@@ -17,7 +17,6 @@ static void process_received_package(struct msghdr *msg, unsigned int packet_num
     struct ip *ip_header = (struct ip *) msg->msg_iov->iov_base;
     int ip_header_length = ip_header->ip_hl << 2;
     struct timeval current_time;
-    char *dns_name;
 
     ft_bzero(&icmp, sizeof(struct icmp));
     ft_memcpy(&icmp, (char *) ip_header + ip_header_length, sizeof(struct icmp));
@@ -32,21 +31,7 @@ static void process_received_package(struct msghdr *msg, unsigned int packet_num
         gettimeofday(&current_time, NULL);
 
         // Printing infos here
-        if (!traceroute.current_ttl_addr_printed) {
-
-            if (traceroute.args.n_flag == false) {
-                dns_name = ft_reverse_dns_lookup(
-                    (struct sockaddr *) &traceroute.packets_received[packet_number].server_addr,
-                    NI_MAXHOST);
-                printf("%s (%s)", dns_name, inet_ntoa(server_addr.sin_addr));
-            } else {
-                printf("%s", inet_ntoa(server_addr.sin_addr));
-            }
-            traceroute.current_ttl_addr_printed = true;
-        }
-        printf("  %.3lf ms",
-               calculate_package_rtt(&traceroute.packets_received[packet_number].sent_time,
-                                     &current_time));
+        print_package_info(packet_number, &server_addr, &current_time);
     }
     if (icmp.icmp_type == ICMP_ECHOREPLY) {
         traceroute.final_packet_received = true;

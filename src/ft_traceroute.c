@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     }
     traceroute.final_packet_received = false;
     for (traceroute.current_ttl = traceroute.args.first_hop;
-         traceroute.current_ttl < traceroute.args.max_hops; traceroute.current_ttl++) {
+         traceroute.current_ttl <= traceroute.args.max_hops; traceroute.current_ttl++) {
         traceroute.current_ttl_addr_printed = false;
         traceroute.current_ttl_printed = false;
         // Set TTL

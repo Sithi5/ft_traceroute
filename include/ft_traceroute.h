@@ -109,6 +109,9 @@ extern g_traceroute traceroute;
 // prints
 void print_traceroute_address_infos();
 void print_current_ttl_stats();
+void print_package_info(unsigned int packet_number, struct sockaddr_in *server_addr,
+                        struct timeval *current_time);
+
 // struct
 void set_packets_stats();
 void set_args_structure();
