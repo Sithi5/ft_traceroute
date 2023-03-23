@@ -3,24 +3,26 @@
 
 static struct icmp create_icmp_header(unsigned int packet_number) {
     struct icmp icmp;
-
+    struct timeval sent_time;
     ft_bzero(&icmp, sizeof(icmp));
 
+    gettimeofday((struct timeval *) &sent_time, NULL);
     icmp.icmp_type = ICMP_ECHO;   // ICMP echo request
     icmp.icmp_code = 0;           // Always 0
     icmp.icmp_id =
         getpid() &
         0xffff;   // ID of the process, we are using our own PID here (16 bits) to keep it simple
-    icmp.icmp_seq = packet_number;                           // Sequence number of the packet
-    gettimeofday((struct timeval *) icmp.icmp_data, NULL);   // Store timestamp in icmp payload
+    icmp.icmp_seq = packet_number;   // Sequence number of the packet
+    ft_memcpy(&icmp.icmp_data, &sent_time,
+              sizeof(struct timeval));   // Store timestamp in icmp payload
     icmp.icmp_cksum = ft_icmp_checksum(
         (char *) &icmp, sizeof(struct icmp));   // Calculate the checksum of the ICMP header
+    traceroute.packets_received[packet_number].sent_time = sent_time;
     return icmp;
 }
 
 void send_package(unsigned int packet_number) {
     struct icmp icmp;
-    int ret;
 
     icmp = create_icmp_header(packet_number);
     if (sendto(traceroute.sockfd, &icmp, sizeof(icmp), 0,

@@ -5,10 +5,12 @@ void usage() {
            "  %s [options] <destination>\n\n"
            "Options:\n"
            "  <destination>      dns name or ip address\n"
-           "  -V                 print version and exit\n"
            "  -q <nqueries>      set the number of probes per each hop\n"
-           "  -m <max_ttl>       set the max number of hops\n",
-           PROGRAM_NAME);
+           "  -m <max_ttl>       set the max number of hops\n"
+           "  -n                 no dns name resolution\n"
+           "  -V                 print version and exit\n"
+           "  -W <timeout>       number of ms to wait for response. By default %d\n",
+           PROGRAM_NAME, DEFAULT_TIMEOUT_MS);
     exit(1);
 }
 
@@ -30,6 +32,8 @@ void parse_args(int argc, char *argv[]) {
                 fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);
                 exit(ERROR_ARGS);
             }
+        } else if (ft_strcmp(argv[i], "-n") == 0) {
+            traceroute.args.n_flag = true;
         } else if (ft_strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
             if (i + 1 < argc && ft_isnumber(argv[i + 1])) {
                 traceroute.args.nqueries = ft_atoi(argv[i + 1]);
@@ -38,6 +42,15 @@ void parse_args(int argc, char *argv[]) {
                     fprintf(stderr, "no more than 10 probes per hop");
                     exit(ERROR_ARGS);
                 }
+                i++;
+            } else {
+                fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);
+                exit(ERROR_ARGS);
+            }
+        } else if (ft_strcmp(argv[i], "-W") == 0 && i + 1 < argc) {
+            if (i + 1 < argc && ft_isnumber(argv[i + 1])) {
+                traceroute.args.W_flag = true;
+                traceroute.args.timeout_ms = ft_atoi(argv[i + 1]);
                 i++;
             } else {
                 fprintf(stderr, "%s: invalid argument: '%s'\n", PROGRAM_NAME, argv[i + 1]);

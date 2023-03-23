@@ -15,6 +15,13 @@ void create_socket() {
         fprintf(stderr, "%s: socket: %s\n", PROGRAM_NAME, strerror(errno));
         exit(ERROR_SOCKET_OPEN);
     }
+
+    timeout.tv_sec = traceroute.args.timeout_ms / 1000;
+    timeout.tv_usec = (traceroute.args.timeout_ms % 1000) * 1000;
+    if (setsockopt(traceroute.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        fprintf(stderr, "%s: setsockopt: %s\n", PROGRAM_NAME, strerror(errno));
+        exit_clean(traceroute.sockfd, ERROR_SOCKET_OPTION);
+    }
 }
 
 void resolve_server_addr() {

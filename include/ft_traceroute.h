@@ -37,6 +37,7 @@
 #define DEFAULT_MAX_HOPS    30
 #define MAX_QUERIES_PER_HOP 10
 #define DEFAULT_NQUERIES    3
+#define DEFAULT_TIMEOUT_MS  5000
 
 /****************************************************************************/
 /*                           ENUM                                           */
@@ -63,6 +64,9 @@ enum e_error {
 typedef struct s_args {
     bool h_flag;
     bool q_flag;
+    bool n_flag;
+    bool W_flag;
+    int timeout_ms;
     unsigned int nqueries;
     int max_hops;
     char *host;
@@ -70,14 +74,9 @@ typedef struct s_args {
 
 typedef struct s_packet_received {
     struct sockaddr_in server_addr;
-    struct timeval sent_time;
-    struct timeval end_time;
-    int ttl;
     double rtt;
-    int icmp_type;
-    int icmp_code;
+    struct timeval sent_time;
     bool received;
-    char *dns_name;
 } t_packet_received;
 
 typedef struct s_traceroute {
