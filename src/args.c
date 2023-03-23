@@ -5,9 +5,10 @@ void usage() {
            "  %s [options] <destination>\n\n"
            "Options:\n"
            "  <destination>      dns name or ip address\n"
-           "  -q <nqueries>      set the number of probes per each hop\n"
+           "  -h                 show this help message and exit\n"
            "  -m <max_ttl>       set the max number of hops\n"
            "  -n                 no dns name resolution\n"
+           "  -q <nqueries>      set the number of probes per each hop\n"
            "  -V                 print version and exit\n"
            "  -W <timeout>       number of ms to wait for response. By default %d\n",
            PROGRAM_NAME, DEFAULT_TIMEOUT_MS);
