@@ -32,7 +32,7 @@ static void process_received_package(struct msghdr *msg, unsigned int packet_num
         gettimeofday(&current_time, NULL);
 
         // Printing infos here
-        if (!traceroute.current_ttl_addr_printed && traceroute.args.n_flag == false) {
+        if (!traceroute.current_ttl_addr_printed) {
 
             if (traceroute.args.n_flag == false) {
                 dns_name = ft_reverse_dns_lookup(
