@@ -1,6 +1,10 @@
 # ft_traceroute
 
+Traceroute is a network diagnostic tool used to track the route and measure transit delays of packets across an Internet Protocol (IP) network.
+
 ## Features
+
+The program is a traceroute implementation that sends packets with increasing Time-to-Live (TTL) values to a specified host and prints the route that the packets take to reach the destination. The program creates a socket and sets a timeout for receiving responses. It resolves the server address either as an IPv4 address or by domain name. It then sends packets with increasing TTL values and receives responses, printing the IP addresses and hostnames of the intermediate routers along the way. The program loops until the final destination is reached or the maximum number of hops is exceeded.
 
 ## Requirements
 
@@ -9,9 +13,18 @@ C compiler (tested with gcc)
 
 ## Options
 
-| Option        | Description            |
-| ------------- | ---------------------- |
-| <destination> | dns name or ip address |
+| Option         | Description                                                                                                 |
+| -------------- | ----------------------------------------------------------------------------------------------------------- |
+| <destination>  | dns name or ip address                                                                                      |
+| -f <first_ttl> | Start from the first_ttl hop                                                                                |
+| -h             | Show help message and exit                                                                                  |
+| -I             | Use ICMP ECHO for probes (default)                                                                          |
+| -m <max_ttl>   | Set the maximum number of hops                                                                              |
+| -n             | Disable DNS name resolution                                                                                 |
+| -q <nqueries>  | Set the number of probes per each hop                                                                       |
+| -V             | Print version and exit                                                                                      |
+| -w <timeout>   | Number of seconds to wait for a response. Double accepted. By default, the value is set to DEFAULT_TIMEOUT. |
+| -z <sendwait>  | Minimal time interval between probes (floating point values allowed, default is 0 seconds)                  |
 
 ## Usefull definition
 
