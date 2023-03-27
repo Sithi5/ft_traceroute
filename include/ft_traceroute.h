@@ -39,7 +39,7 @@
 #define MAX_HOPS            255
 #define MAX_QUERIES_PER_HOP 10
 #define DEFAULT_NQUERIES    3
-#define DEFAULT_TIMEOUT     5000
+#define DEFAULT_TIMEOUT     5
 #define DEFAULT_SENDWAIT    0
 
 /****************************************************************************/
